@@ -1,0 +1,219 @@
+---
+title: "Introduction to Simple Linear Regression"
+author: "Amy Fishencord"
+date: "2024-10-25"
+output:
+  ioslides_presentation: default
+  beamer_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+library(plotly)
+```
+
+<!--
+The following two parts are responsible for the logo and the bar around the logo.
+-->
+
+<style>
+.gdbar img {
+ width: 150px !important;
+ height: 80px !important;
+ margin: 8px 8px;
+}
+
+.gdbar {
+ width: 200px !important;
+ height: 100px !important;
+}
+
+</style>
+
+<!--
+The following parts are responsible for the text. Actually, it specifies certain features
+of the text. p: paragraph, div: division (it's similar to the paragraph), h1: heading at 
+level 1 (the largest title or the largest heading), h2 is a bit smaller heading (h2 is the
+title of each slide)...
+Below we are specifying that all of these html tags will have color of the text black
+and font family: Modern Computer Roman. (This is the default Latex font). 
+-->
+
+<style type="text/css">
+body,p,div,h1,h2,h3,h4,h5 {
+  color: black;
+  font-family: Modern Computer Roman;
+}
+
+h2{
+color: deeppink
+
+}
+
+
+</style>
+
+## Linear Regression
+Linear regression is a statistical model that estimates the linear relationship between a scalar response and one or more explanatory variables.
+
+Scientists in many fields, including biology and the behavioral, environmental, and social sciences, use linear regression to conduct preliminary data analysis and predict future trends.
+
+In linear regression, the independent variable is the variable that is used to predict the value of another variable, while the dependent variable is the variable that is being predicted.
+
+## Mathematical Representation
+Equation of Simple Linear Regression:
+$$
+y = {\beta}_0 + {\beta}_1x
+$$
+where \(y\) is the dependent variable, 
+\({\beta}_0\) is the intercept (when y = 0), 
+\({\beta}_1\) is the slope of the regression line and 
+\(x\) is the independent variable
+
+Expected Value of \(y\):
+$$
+E(y) = {\beta}_0 + {\beta}_1x
+$$
+where,
+\(E(y)\) is the expected value of \(y\),
+\({\beta}_0\) is the intercept,
+\({\beta}_1\) is the slope,
+and \(x\) is the independent variable
+
+## Data Set Used
+We need to work with a data set to further explain linear regression. We will now load in the mtcars dataset.
+```{r, echo = TRUE}
+data("mtcars")
+head(mtcars)
+```
+
+## Weight vs Mpg
+```{r, fig.width=6, fig.height=4, fig.align='center', echo = TRUE}
+ggplot(mtcars, aes(wt, mpg)) +
+  geom_point() +
+  labs(x = "Weight (in 1000's of lbs)", y = "Miles Per Gallon")
+```
+
+## Linear Model of Weight vs MGP
+```{r, fig.width=6, fig.height=4, fig.align='center'}
+ggplot(mtcars, aes(wt, mpg)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, color = "deeppink") +
+labs(x = "Weight (in 1000's of lbs)", y = "Miles Per Gallon")
+```
+We can observe there is a negative regression line. This means that for every unit increase in the independent variable (like weight), the dependent variable (MPG) decreases.
+
+## Linear Model Summary
+```{r, echo = TRUE}
+model <- lm(mpg ~ wt, data = mtcars)
+wt_coefficient <- summary(model)$coefficients["wt", "Estimate"]
+wt_coefficient
+```
+The coefficient for wt is -5.3445, meaning that for every increase of 1 unit in weight (1000 lbs), the mpg decreases by approximately 5.34. This indicates a negative relationship between weight and miles per gallon: as weight increases, fuel efficiency decreases.
+
+- The coefficient for wt (\({\beta}_1\)) is the slope in the equation
+\(E(y)\) = \({\beta}_0\) + \({\beta}_1x\)
+- The variable wt itself represent \(x\) in the equation.
+
+## Horsepower vs MPG Linear Model
+
+<style>
+.small-font {
+  font-size: 0.8em; /* Adjust the size as needed */
+}
+</style>
+
+<div class="small-font">
+
+```{r, fig.width=4.5, fig.height=3.5, fig.align='center'}
+ggplot(mtcars, aes(hp, mpg)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, color = "pink") +
+  labs(x = "Horsepower", y = "Miles Per Gallon")
+
+model2 <- lm(mpg ~ hp, data = mtcars)
+hp_coeff <- summary(model2)$coefficients["hp", "Estimate"]
+hp_coeff
+```
+We can observe the linear relationship of horsepower vs miles per gallon having a negative relationship. The coefficient -0.06 represents the expected change in miles per gallon for each one-unit increase in horsepower. 
+
+## Mathematical Representation
+$$
+E(y) = {\beta}_0 + {\beta}_1x
+$$
+From the previous graph, we are calculating the expected value (\(E(y)\)) of miles per gallon based on horsepower.
+
+- \({\beta_0}\) is the intercept of the regression line, representing the expected MPG when horsepower is zero. While in practical terms, a horsepower of zero may not make sense, it provides a baseline for understanding the relationship.
+
+- \({\beta}_1\) is the slope of the regression line, indicating the expected negative change of 0.06 in MPG for each one-unit increase in horsepower.
+
+## Mathematical Representation Example 
+For example, if we assume \({\beta_0}\) = 30 and \({\beta}_1\) = -0.06 based from our earlier analysis, we can say:
+
+- When horsepower is zero, the model predicts that the MPG would be 30.
+
+- For every additional horsepower, we expect the MPG to decrease by 0.06, suggesting that higher horsepower vehicles are generally less fuel-efficient.
+
+By examining these coefficients and their meanings, we can better understand the relationship between vehicle characteristics and their performance in terms of fuel consumption.
+
+## Behind the scenes 
+
+The code the use to produce the graph and horsepower coefficient is shown below. 
+```{r, echo = TRUE, fig.show = "hide", eval = FALSE}
+ggplot(mtcars, aes(hp, mpg)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, 
+              color = "pink") +
+  labs(x = "Horsepower", y = "Miles Per Gallon")
+
+model2 <- lm(mpg ~ hp, data = mtcars)
+hp_coeff <- summary(model2)$coefficients["hp", "Estimate"]
+hp_coeff
+```
+
+## 3D Scatter Plot
+```{r,fig.width=7, fig.height=5.5, echo = FALSE}
+plot_ly(data = mtcars, x = ~hp, y = ~wt, z = ~mpg,
+        type = "scatter3d", mode = "markers", 
+        marker = list(size = 5, color = "deeppink", opacity = 0.9)) %>%
+  layout(scene = list(
+      xaxis = list(title = 'Horsepower'),
+      yaxis = list(title = "Weight (in 1000's of lbs)"),
+      zaxis = list(title = 'Miles Per Gallon')),
+    title = "3D Scatter Plot of MPG, Horsepower, and Weight"
+)
+```
+
+## Behind the Scenes
+The code used to produce the 3D scatter plot in the previous slide is provided below.
+```{r, echo = TRUE, fig.show = "hide", eval = FALSE}
+plot_ly(data = mtcars, x = ~hp, y = ~wt, z = ~mpg,
+        type = "scatter3d", mode = "markers", 
+        marker = list(size = 5, color = "deeppink", opacity = 0.9)) %>%
+  layout(scene = list(
+      xaxis = list(title = 'Horsepower'),
+      yaxis = list(title = "Weight (in 1000's of lbs)"),
+      zaxis = list(title = 'Miles Per Gallon')),
+    title = "3D Scatter Plot of MPG, Horsepower, and Weight"
+)
+```
+
+## Conclusion
+
+<div class="small-font">
+
+Key Takeaways:
+
+- Linear regression models demonstrate the negative relationship between horsepower MPG as well as weight and MPG.
+- The coefficients provide valuable insights into how changes in independent variables (horsepower and weight) affect fuel efficiency.
+
+Implications: 
+
+- Understanding these relationships can inform consumer choices when purchasing vehicles, emphasizing the trade-offs between performance (horsepower) and fuel efficiency.
+
+Further Research:
+
+- Further exploration of other factors influencing MPG, such as engine type and vehicle design, could enhance our understanding of fuel efficiency.
+
+</div>
